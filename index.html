@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Somaliland School Pro</title>
+    <style>
+        :root {
+            --primary: #1a5f7a;
+            --accent: #0088cc;
+            --bg: #f4f7f6;
+            --white: #ffffff;
+            --success: #27ae60;
+            --danger: #e74c3c;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        
+        /* Containers */
+        .page { display: none; max-width: 1000px; margin: 0 auto; animation: fadeIn 0.3s ease-in; }
+        .active { display: block !important; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Login Interface */
+        .login-card { 
+            background: var(--white); padding: 40px; border-radius: 15px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; 
+            max-width: 380px; margin: 100px auto; border-top: 6px solid var(--primary);
+        }
+
+        /* Header Style */
+        header { 
+            background: var(--primary); color: white; padding: 15px 25px; 
+            border-radius: 12px; display: flex; justify-content: space-between; 
+            align-items: center; margin-bottom: 25px; 
+        }
+
+        /* Dashboard Cards */
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: var(--white); padding: 15px; border-radius: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+        .form-section { background: var(--white); padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        
+        /* Inputs & Buttons */
+        input, select { padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; width: 100%; box-sizing: border-box; }
+        .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; color: white; }
+        .btn-primary { background: var(--primary); width: 100%; }
+        .btn-add { background: var(--success); }
+        .btn-logout { background: rgba(255,255,255,0.2); border: 1px solid white; font-size: 12px; }
+        
+        /* Table Style */
+        .table-container { background: var(--white); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f8f9fa; padding: 15px; text-align: left; color: var(--primary); font-size: 14px; }
+        td { padding: 15px; border-top: 1px solid #eee; font-size: 14px; }
+
+        /* Badges */
+        .badge { padding: 5px 12px; border-radius: 15px; font-size: 11px; font-weight: bold; }
+        .paid { background: #d4edda; color: #155724; }
+        .unpaid { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+
+<div id="loginPage" class="page active">
+    <div class="login-card">
+        <h1 style="color: var(--primary); margin: 0;">SKOOLKA</h1>
+        <p style="color: #666; margin-bottom: 25px;">Nidaamka Maamulka & Waalidka</p>
+        
+        <label style="display:block; text-align:left; font-size:13px;">Nooca isticmaalaha:</label>
+        <select id="userRole">
+            <option value="admin">Maamulka (Admin)</option>
+            <option value="parent">Waalidka (Parent)</option>
+        </select>
+        
+        <input type="password" id="passInput" placeholder="Gali Password (123)">
+        <button class="btn btn-primary" onclick="checkLogin()">SOO GAL</button>
+    </div>
+</div>
+
+<div id="adminPage" class="page">
+    <header>
+        <div>
+            <h2 style="margin:0;">Dashboard-ka Maamulka</h2>
+            <small id="currentDate"></small>
+        </div>
+        <button class="btn btn-logout" onclick="location.reload()">Ka bax</button>
+    </header>
+
+    <div class="stat-grid">
+        <div class="stat-card">
+            <small>Wadarta Ardayda</small>
+            <h2 id="totalStd" style="margin:5px 0; color:var(--primary);">0</h2>
+        </div>
+        <div class="stat-card">
+            <small>Waa bixiyeen</small>
+            <h2 id="totalPaid" style="margin:5px 0; color:var(--success);">0</h2>
+        </div>
+        <div class="stat-card">
+            <small>Ma bixin</small>
+            <h2 id="totalUnpaid" style="margin:5px 0; color:var(--danger);">0</h2>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h3 style="margin-top:0; color:var(--primary);">+ Diiwaangeli Arday</h3>
+        <div style="display: flex; gap: 10px;">
+            <input type="text" id="stdName" placeholder="Magaca">
+            <select id="stdClass">
+                <option value="">-- Fasal --</option>
+                <option value="Form 1">Form 1</option>
+                <option value="Form 2">Form 2</option>
+                <option value="Form 3">Form 3</option>
+                <option value="Form 4">Form 4</option>
+            </select>
+            <input type="number" id="stdPhone" placeholder="Tel Waalidka">
+            <button class="btn btn-add" onclick="addStudent()">Add</button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Magaca</th>
+                    <th>Fasalka</th>
+                    <th>Tel Waalidka</th>
+                    <th>Xaaladda</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="adminBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<div id="parentPage" class="page">
+    <header>
+        <h2>Portal-ka Waalidka</h2>
+        <button class="btn btn-logout" onclick="location.reload()">Ka bax</button>
+    </header>
+    
+    <div class="form-section">
+        <label>Ku kala saar fasallada:</label>
+        <select id="filterClass" onchange="renderParent()">
+            <option value="All">Dhammaan Fasalada</option>
+            <option value="Form 1">Form 1</option>
+            <option value="Form 2">Form 2</option>
+            <option value="Form 3">Form 3</option>
+            <option value="Form 4">Form 4</option>
+        </select>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Magaca Ardayga</th>
+                    <th>Fasalka</th>
+                    <th>Xaaladda Lacagta</th>
+                </tr>
+            </thead>
+            <tbody id="parentBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // --- DATABASE CONFIGURATION (IndexedDB) ---
+    let db;
+    let students = []; // Acts as local cache for UI
+    const DB_NAME = 'SL_School_DB_V2';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'students';
+
+    // Initialize Database on Page Load
+    function initDB() {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+        request.onupgradeneeded = function(e) {
+            db = e.target.result;
+            // Create object store if not exists
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                db.createObjectStore(STORE_NAME, { keyPath: "id", autoIncrement: true });
+            }
+        };
+
+        request.onsuccess = function(e) {
+            db = e.target.result;
+            loadStudentsFromDB(); // Fetch data immediately
+        };
+
+        request.onerror = function(e) {
+            console.error("DB Error:", e.target.errorCode);
+        };
+    }
+
+    // Load Data from IndexedDB into 'students' array
+    function loadStudentsFromDB() {
+        if(!db) return;
+        const transaction = db.transaction([STORE_NAME], "readonly");
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.getAll();
+
+        request.onsuccess = function(e) {
+            students = e.target.result || [];
+            // Refresh views if they are open
+            if(document.getElementById('adminPage').classList.contains('active')) renderAdmin();
+            if(document.getElementById('parentPage').classList.contains('active')) renderParent();
+        };
+    }
+
+    // Sync current 'students' array to IndexedDB
+    // We clear the store and rewrite to ensure array order matches DB logic
+    function syncToDB() {
+        if(!db) return;
+        const transaction = db.transaction([STORE_NAME], "readwrite");
+        const store = transaction.objectStore(STORE_NAME);
+        
+        // Clear old data to avoid ID conflicts since we rely on array index logic
+        store.clear(); 
+
+        students.forEach(student => {
+            // Remove old ID if exists to let DB generate new sequential ones
+            // This ensures our Array Index always matches the DB load order
+            const { id, ...data } = student; 
+            store.add(data);
+        });
+    }
+
+    // Start DB
+    initDB();
+
+    // --- LOGIN ---
+    function checkLogin() {
+        const pass = document.getElementById('passInput').value;
+        const role = document.getElementById('userRole').value;
+
+        if (pass === "123") {
+            document.getElementById('loginPage').style.display = 'none';
+            if (role === 'admin') {
+                document.getElementById('adminPage').classList.add('active');
+                renderAdmin();
+            } else {
+                document.getElementById('parentPage').classList.add('active');
+                renderParent();
+            }
+        } else {
+            alert("Password-ku waa 123");
+        }
+    }
+
+    // --- ADMIN LOGIC ---
+    function renderAdmin() {
+        const body = document.getElementById('adminBody');
+        body.innerHTML = "";
+        
+        let paidCount = 0;
+        students.forEach((s, i) => {
+            if(s.paid) paidCount++;
+            body.innerHTML += `
+                <tr>
+                    <td><b>${s.name}</b></td>
+                    <td>${s.class}</td>
+                    <td>${s.phone}</td>
+                    <td><span class="badge ${s.paid ? 'paid' : 'unpaid'}">${s.paid ? 'Bixiyay' : 'Ma bixin'}</span></td>
+                    <td>
+                        <button onclick="togglePaid(${i})" style="background:#f39c12; color:white; border:none; padding:5px 8px; border-radius:4px; font-size:10px;">Status</button>
+                        <button onclick="deleteStd(${i})" style="background:#e74c3c; color:white; border:none; padding:5px 8px; border-radius:4px; font-size:10px;">Xataa</button>
+                    </td>
+                </tr>`;
+        });
+
+        // Update Stats
+        document.getElementById('totalStd').innerText = students.length;
+        document.getElementById('totalPaid').innerText = paidCount;
+        document.getElementById('totalUnpaid').innerText = students.length - paidCount;
+    }
+
+    function addStudent() {
+        const name = document.getElementById('stdName').value;
+        const cls = document.getElementById('stdClass').value;
+        const ph = document.getElementById('stdPhone').value;
+
+        if(name && cls && ph) {
+            // Add to local array
+            students.push({ name: name, class: cls, phone: ph, paid: false });
+            
+            // UI Update
+            document.getElementById('stdName').value = "";
+            document.getElementById('stdClass').value = "";
+            document.getElementById('stdPhone').value = "";
+            renderAdmin();
+            
+            // DB Save
+            syncToDB();
+        } else {
+            alert("Fadlan buuxi dhammaan meelaha!");
+        }
+    }
+
+    function togglePaid(i) {
+        students[i].paid = !students[i].paid;
+        renderAdmin();
+        syncToDB(); // Save change
+    }
+
+    function deleteStd(i) {
+        if(confirm("Ma tirtirtaa ardaygan?")) {
+            students.splice(i, 1);
+            renderAdmin();
+            syncToDB(); // Save change
+        }
+    }
+
+    // --- PARENT LOGIC ---
+    function renderParent() {
+        const filter = document.getElementById('filterClass').value;
+        const body = document.getElementById('parentBody');
+        body.innerHTML = "";
+        students.forEach(s => {
+            if (filter === "All" || s.class === filter) {
+                body.innerHTML += `
+                    <tr>
+                        <td><b>${s.name}</b></td>
+                        <td>${s.class}</td>
+                        <td><span class="badge ${s.paid ? 'paid' : 'unpaid'}">${s.paid ? 'Waa bixiyay' : 'Ma bixin'}</span></td>
+                    </tr>`;
+            }
+        });
+    }
+
+    // Set Date
+    document.getElementById('currentDate').innerText = new Date().toDateString();
+</script>
+
+</body>
+</html>
